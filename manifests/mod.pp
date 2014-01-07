@@ -66,8 +66,18 @@ define apache::mod (
     }
   }
 
+  $mod_load_ensure = $package_ensure ? {
+    /(present|installed|held|latest)/ => 'file',
+    default                           => 'absent',
+  }
+
+  $mod_symlink_ensure = $package_ensure ? {
+    /(present|installed|held|latest)/ => 'link',
+    default                           => 'absent',
+  }
+
   file { "${mod}.load":
-    ensure  => file,
+    ensure  => $mod_load_ensure,
     path    => "${mod_dir}/${mod}.load",
     owner   => 'root',
     group   => $apache::params::root_group,
@@ -84,7 +94,7 @@ define apache::mod (
   if $::osfamily == 'Debian' {
     $enable_dir = $apache::mod_enable_dir
     file{ "${mod}.load symlink":
-      ensure  => link,
+      ensure  => $mod_symlink_ensure,
       path    => "${enable_dir}/${mod}.load",
       target  => "${mod_dir}/${mod}.load",
       owner   => 'root',
@@ -102,7 +112,7 @@ define apache::mod (
     # Some modules do not require this file.
     if defined(File["${mod}.conf"]) {
       file{ "${mod}.conf symlink":
-        ensure  => link,
+        ensure  => $mod_symlink_ensure,
         path    => "${enable_dir}/${mod}.conf",
         target  => "${mod_dir}/${mod}.conf",
         owner   => 'root',
