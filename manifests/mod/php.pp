@@ -12,18 +12,20 @@ class apache::mod::php (
   include apache::mod::dir
   Class['apache::mod::mime'] -> Class['apache::mod::dir'] -> Class['apache::mod::php']
 
-  if $package_ensure == 'present' {
-    file { 'php5.conf':
-      ensure  => file,
-      path    => "${apache::mod_dir}/php5.conf",
-      content => template('apache/mod/php5.conf.erb'),
-      require => [
-        Class['apache::mod::prefork'],
-        Exec["mkdir ${apache::mod_dir}"],
-      ],
-      before  => File[$apache::mod_dir],
-      notify  => Service['httpd'],
-    }
+  $php5_conf_ensure = $package_ensure ? {
+    /(present|installed|held|latest)/ => 'file',
+    default                           => 'absent',
   }
 
+  file { 'php5.conf':
+    ensure  => $php5_conf_ensure,
+    path    => "${apache::mod_dir}/php5.conf",
+    content => template('apache/mod/php5.conf.erb'),
+    require => [
+      Class['apache::mod::prefork'],
+      Exec["mkdir ${apache::mod_dir}"],
+    ],
+    before  => File[$apache::mod_dir],
+    notify  => Service['httpd'],
+  }
 }
