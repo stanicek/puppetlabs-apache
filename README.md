@@ -378,6 +378,7 @@ There are many `apache::mod::[name]` classes within this module that can be decl
 * `alias`
 * `auth_basic`
 * `auth_kerb`
+* `authnz_ldap`*
 * `autoindex`
 * `cache`
 * `cgi`
@@ -390,6 +391,7 @@ There are many `apache::mod::[name]` classes within this module that can be decl
 * `dir`*
 * `disk_cache`
 * `event`
+* `expires`
 * `fastcgi`
 * `fcgid`
 * `headers`
@@ -399,7 +401,6 @@ There are many `apache::mod::[name]` classes within this module that can be decl
 * `ldap`
 * `mime`
 * `mime_magic`*
-* `mpm_event`
 * `negotiation`
 * `nss`*
 * `passenger`*
@@ -409,6 +410,7 @@ There are many `apache::mod::[name]` classes within this module that can be decl
 * `prefork`*
 * `proxy`*
 * `proxy_ajp`
+* `proxy_balancer`
 * `proxy_html`
 * `proxy_http`
 * `python`
@@ -736,6 +738,11 @@ documentation](https://httpd.apache.org/docs/2.2/mod/mod_auth_basic.html#authbas
 Sets the value for `AuthUserFile` as per the [Apache AuthUserFile
 documentation](https://httpd.apache.org/docs/2.2/mod/mod_authn_file.html#authuserfile).
 
+######`auth_group_file`
+
+Sets the value for `AuthGroupFile` as per the [Apache AuthGroupFile
+documentation](https://httpd.apache.org/docs/2.2/mod/mod_authz_groupfile.html#authgroupfile).
+
 ######`auth_require`
 
 Sets the value for `AuthName` as per the [Apache Require
@@ -860,6 +867,20 @@ Directory to enable for FastCGI.  Defaults to 'undef'.
 Specifies paths to additional static vhost-specific Apache configuration files.
 This option is useful when you need to implement a unique and/or custom
 configuration not supported by this module.
+
+#####`headers`
+
+Specifies additional response headers as per [the `mod_headers` documentation](http://httpd.apache.org/docs/2.2/mod/mod_headers.html#header).
+
+```puppet
+    apache::vhost { 'site.name.fdqn':
+      …
+      headers => [
+        'add Strict-Transport-Security "max-age=15768000"',
+        'merge Cache-Control no-cache env=CGI',
+      ],
+    }
+```
 
 #####`ip`
 
@@ -1434,7 +1455,7 @@ Apache httpd requires that `Listen` directives must be added for every port. The
 Enables named-based hosting of a virtual host
 
 ```puppet
-    class { 'apache::namevirtualhost`: }
+    apache::namevirtualhost { '*:80': }
 ```
 
 Declaring this defined type will add all `NameVirtualHost` directives to the `ports.conf` file in the Apache https configuration directory. `apache::namevirtualhost` titles should always take the form of: `*`, `*:<port>`, `_default_:<port>`, `<ip>`, or `<ip>:<port>`.
@@ -1494,7 +1515,7 @@ Quickstart:
     gem install bundler
     bundle install
     bundle exec rake spec
-    bundle exec rake spec:system
+    bundle exec rspec spec/acceptance
 
 ##Copyright and License
 

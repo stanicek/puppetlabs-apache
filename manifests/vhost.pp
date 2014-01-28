@@ -23,6 +23,7 @@
 #   of 'warn' is used.
 # - The $access_log specifies if *_access.log directives should be configured.
 # - The $ensure specifies if vhost file is present or absent.
+# - The $headers is a list of Header statement strings as per http://httpd.apache.org/docs/2.2/mod/mod_headers.html#header
 # - The $request_headers is a list of RequestHeader statement strings as per http://httpd.apache.org/docs/2.2/mod/mod_headers.html#requestheader
 # - $aliases is a list of Alias hashes for mod_alias as per http://httpd.apache.org/docs/current/mod/mod_alias.html
 #   each statement is a hash in the form of { alias => '/alias', path => '/real/path/to/directory' }
@@ -114,8 +115,6 @@ define apache::vhost(
     $servername                  = $name,
     $serveraliases               = [],
     $options                     = ['Indexes','FollowSymLinks','MultiViews'],
-    $index_options               = [],
-    $index_order_default         = [],
     $override                    = ['None'],
     $directoryindex              = '',
     $vhost_name                  = '*',
@@ -148,7 +147,10 @@ define apache::vhost(
     $redirect_source             = '/',
     $redirect_dest               = undef,
     $redirect_status             = undef,
+    $redirectmatch_status        = undef,
+    $redirectmatch_regexp        = undef,
     $rack_base_uris              = undef,
+    $headers                     = undef,
     $request_headers             = undef,
     $rewrites                    = undef,
     $rewrite_rule                = undef,
@@ -268,9 +270,9 @@ define apache::vhost(
     $access_log_destination = $access_log_syslog
   } else {
     if $ssl {
-      $access_log_destination = "${logroot}/${servername}_access_ssl.log"
+      $access_log_destination = "${logroot}/${name}_access_ssl.log"
     } else {
-      $access_log_destination = "${logroot}/${servername}_access.log"
+      $access_log_destination = "${logroot}/${name}_access.log"
     }
   }
 
@@ -282,9 +284,9 @@ define apache::vhost(
     $error_log_destination = $error_log_syslog
   } else {
     if $ssl {
-      $error_log_destination = "${logroot}/${servername}_error_ssl.log"
+      $error_log_destination = "${logroot}/${name}_error_ssl.log"
     } else {
-      $error_log_destination = "${logroot}/${servername}_error.log"
+      $error_log_destination = "${logroot}/${name}_error.log"
     }
   }
 
@@ -383,8 +385,8 @@ define apache::vhost(
     $priority_real = '25'
   }
 
-  # Check if mod_headers is required to process $request_headers
-  if $request_headers {
+  # Check if mod_headers is required to process $headers/$request_headers
+  if $headers or $request_headers {
     if ! defined(Class['apache::mod::headers']) {
       include apache::mod::headers
     }
@@ -395,6 +397,9 @@ define apache::vhost(
 
   ## Create a default directory list if none defined
   if $directories {
+    if !is_hash($directories) and !(is_array($directories) and is_hash($directories[0])) {
+      fail("Apache::Vhost[${name}]: 'directories' must be either a Hash or an Array of Hashes")
+    }
     $my_directories = $directories
   } else {
     $my_directories = [ {
@@ -451,6 +456,8 @@ define apache::vhost(
   #   - $redirect_source
   #   - $redirect_dest
   #   - $redirect_status
+  # header fragment
+  #   - $headers
   # requestheader fragment:
   #   - $request_headers
   # rewrite fragment:

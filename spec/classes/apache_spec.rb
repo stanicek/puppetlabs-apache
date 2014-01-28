@@ -37,7 +37,7 @@ describe 'apache', :type => :class do
     it { should contain_file("/etc/apache2/mods-available").with(
       'ensure'  => 'directory',
       'recurse' => 'true',
-      'purge'   => 'true',
+      'purge'   => 'false',
       'notify'  => 'Class[Apache::Service]',
       'require' => 'Package[httpd]'
       )
@@ -213,10 +213,10 @@ describe 'apache', :type => :class do
         ) }
       end
 
-      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include /etc/httpd/conf\.d/\*\.conf$} }
-      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include /etc/httpd/site\.d/\*\.conf$} }
-      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include /etc/httpd/mod\.d/\*\.conf$} }
-      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include /etc/httpd/mod\.d/\*\.load$} }
+      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include "/etc/httpd/conf\.d/\*\.conf"$} }
+      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include "/etc/httpd/site\.d/\*\.conf"$} }
+      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include "/etc/httpd/mod\.d/\*\.conf"$} }
+      it { should contain_file("/etc/httpd/conf/httpd.conf").with_content %r{^Include "/etc/httpd/mod\.d/\*\.load"$} }
     end
 
     describe "Alternate conf.d directory" do

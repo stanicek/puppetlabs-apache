@@ -19,7 +19,7 @@ define apache::mod (
   $mod_lib = $mod_libs[$mod] # 2.6 compatibility hack
   if $lib {
     $my_lib = $lib
-  } elsif "${mod_lib}" {
+  } elsif $mod_lib {
     $my_lib = $mod_lib
   } else {
     $my_lib = "mod_${mod}.so"
@@ -42,9 +42,15 @@ define apache::mod (
   $mod_packages = $apache::params::mod_packages
   $mod_package = $mod_packages[$mod] # 2.6 compatibility hack
   if $package {
+<<<<<<< HEAD
     $my_package = $package
   } elsif "${mod_package}" {
     $my_package = $mod_package
+=======
+    $_package = $package
+  } elsif $mod_package {
+    $_package = $mod_package
+>>>>>>> 9883dcdd099239e4461324afc189aac49561a267
   }
   if $my_package and ! defined(Package[$my_package]) {
     # note: FreeBSD/ports uses apxs tool to activate modules; apxs clutters
