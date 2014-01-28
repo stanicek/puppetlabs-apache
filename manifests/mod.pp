@@ -42,15 +42,9 @@ define apache::mod (
   $mod_packages = $apache::params::mod_packages
   $mod_package = $mod_packages[$mod] # 2.6 compatibility hack
   if $package {
-<<<<<<< HEAD
     $my_package = $package
-  } elsif "${mod_package}" {
-    $my_package = $mod_package
-=======
-    $_package = $package
   } elsif $mod_package {
-    $_package = $mod_package
->>>>>>> 9883dcdd099239e4461324afc189aac49561a267
+    $my_package = $mod_package
   }
   if $my_package and ! defined(Package[$my_package]) {
     # note: FreeBSD/ports uses apxs tool to activate modules; apxs clutters
