@@ -1,4 +1,4 @@
-class apache::mod::prefork (
+class apache::mod::php5-fpm (
   $startservers        = '8',
   $minspareservers     = '5',
   $maxspareservers     = '20',
