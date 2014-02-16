@@ -1,7 +1,7 @@
 class apache::mod::php (
   $package_ensure = 'present',
 ) {
-  if ! defined(Class['apache::mod::prefork']) || ! defined(Class['apache::mod::php5-fpm']) {
+  if ! (defined(Class['apache::mod::prefork']) && defined(Class['apache::mod::php5-fpm'])) {
     fail('apache::mod::php requires apache::mod::prefork or apache::mod::php5-fpm; please enable mpm_module => \'prefork\' or \'php5-fpm\' on Class[\'apache\']')
   }
   apache::mod { 'php5':
