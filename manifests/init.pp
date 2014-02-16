@@ -66,7 +66,7 @@ class apache (
 
   $valid_mpms_re = $::osfamily ? {
     'FreeBSD' => '(event|itk|peruser|prefork|worker)',
-    default   => '(itk|prefork|worker)'
+    default   => '(itk|prefork|worker|fpm)'
   }
 
   if $mpm_module {

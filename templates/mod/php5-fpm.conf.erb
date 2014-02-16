@@ -1,0 +1,6 @@
+# The Fastcgi+FPM Apache module configuration file is being
+# managed by Puppet and changes will be overwritten.
+<IfModule mod_fastcgi.c>
+  AddHandler application/x-httpd-php .php
+  Action application/x-httpd-php /fcgi-bin/php5-fpm virtual
+</IfModule>
