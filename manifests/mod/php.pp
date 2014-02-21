@@ -18,13 +18,19 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
   }
   
   if (defined(Class['apache::mod::prefork'])) {
-  	$required_module = 'prefork'
+    $required_dependencies = [
+      Class['prefork'],
+      Exec["mkdir ${apache::mod_dir}"],
+    ]
   	$php_conf_path = "apache/mod/php5.conf.erb"
   }
   
   if (defined(Class['apache::mod::worker'])) {
-    $required_module = 'worker'
-    $required_apache_module = 'actions'
+    $required_dependencies = [
+      Class['worker'],
+      Apache::Mod['actions'],
+      Exec["mkdir ${apache::mod_dir}"],
+    ]
     contain apache::mod::fastcgi
   	$php_conf_path = "apache/mod/php5-fpm.conf.erb"
   }
@@ -33,11 +39,7 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
     ensure  => $php5_conf_ensure,
     path    => "${apache::mod_dir}/php5.conf",
     content => template($php_conf_path),
-    require => [
-      Class[$required_module],
-      Apache::Mod[$required_apache_module],
-      Exec["mkdir ${apache::mod_dir}"],
-    ],
+    require => $required_dependencies,
     before  => File[$apache::mod_dir],
     notify  => Service['httpd'],
   }
