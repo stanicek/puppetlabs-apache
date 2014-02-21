@@ -24,8 +24,8 @@ class apache::mod::php (
   
   if (defined(Class['apache::mod::worker'])) {
     $required_module = 'worker'
-    apache::mod {'actions': }
-    include apache::mod::fastcgi
+    contain apache::mod {'actions': }
+    contain apache::mod::fastcgi
   	$php_conf_path = "apache/mod/php5-fpm.conf.erb"
   }
 
