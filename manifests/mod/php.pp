@@ -1,8 +1,8 @@
 class apache::mod::php (
   $package_ensure = 'present',
 ) {
-  if ! (defined(Class['apache::mod::prefork']) || defined(Class['apache::mod::php5-fpm'])) {
-    fail('apache::mod::php requires apache::mod::prefork or apache::mod::php5-fpm; please enable mpm_module => \'prefork\' or \'php5-fpm\' on Class[\'apache\']')
+if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::worker']))) {
+    fail('apache::mod::php requires apache::mod::prefork; please enable mpm_module => \'prefork\' on Class[\'apache\']')
   }
   apache::mod { 'php5':
     package_ensure => $package_ensure,
@@ -16,13 +16,26 @@ class apache::mod::php (
     /(present|installed|held|latest)/ => 'file',
     default                           => 'absent',
   }
+  
+  if (defined(Class['apache::mod::prefork'])) {
+  	$required_module = 'prefork'
+  	$php_conf_path = "apache/mod/php5.conf.erb"
+  }
+  
+  if (defined(Class['apache::mod::worker'])) {
+    $required_module = 'worker'
+    $required_apache_module = 'actions'
+    contain apache::mod::fastcgi
+  	$php_conf_path = "apache/mod/php5-fpm.conf.erb"
+  }
 
   file { 'php5.conf':
     ensure  => $php5_conf_ensure,
     path    => "${apache::mod_dir}/php5.conf",
-    content => template('apache/mod/php5.conf.erb'),
+    content => template($php_conf_path),
     require => [
-      Class['apache::mod::prefork'],
+      Class[$required_module],
+      Apache::Mod[$required_apache_module],
       Exec["mkdir ${apache::mod_dir}"],
     ],
     before  => File[$apache::mod_dir],

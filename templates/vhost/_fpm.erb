@@ -1,0 +1,6 @@
+<% if @fpm_server -%>
+
+  Alias /php5-fcgi <%= @fpm_server %>
+  FastCgiExternalServer <%= @fpm_server %> -socket <%= @fpm_socket %> -user <%= @fpm_user %> -group <%= @fpm_group %>
+
+<% end -%>
