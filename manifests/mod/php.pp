@@ -24,7 +24,7 @@ class apache::mod::php (
   
   if (defined(Class['apache::mod::worker'])) {
     $required_module = 'worker'
-    contain apache::mod {'actions': }
+    $required_apache_module = 'actions'
     contain apache::mod::fastcgi
   	$php_conf_path = "apache/mod/php5-fpm.conf.erb"
   }
@@ -35,6 +35,7 @@ class apache::mod::php (
     content => template($php_conf_path),
     require => [
       Class[$required_module],
+      Apache::Mod[$required_apache_module],
       Exec["mkdir ${apache::mod_dir}"],
     ],
     before  => File[$apache::mod_dir],
