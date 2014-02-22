@@ -171,8 +171,6 @@ define apache::vhost(
     $additional_includes         = [],
     $fpm_server                  = undef,
     $fpm_socket                  = undef,
-    $fpm_user                    = undef,
-    $fpm_group                   = undef,
   ) {
   # The base class must be included first because it is used by parameter defaults
   if ! defined(Class['apache']) {
