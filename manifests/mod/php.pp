@@ -5,11 +5,13 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
     fail('apache::mod::php requires apache::mod::prefork; please enable mpm_module => \'prefork\' on Class[\'apache\']')
   }
   if (defined(Class['apache::mod::worker'])) {
-    $package_ensure = 'absent'
-  }
-
-  apache::mod { 'php5':
-    package_ensure => $package_ensure,
+    apache::mod { 'php5':
+      package_ensure => 'absent',
+    }
+  } else {
+    apache::mod { 'php5':
+      package_ensure => $package_ensure,
+    }
   }
 
   include apache::mod::mime
