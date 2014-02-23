@@ -48,6 +48,7 @@ class apache::mod::worker (
         path   => '/etc/sysconfig/httpd',
         line   => 'HTTPD=/usr/sbin/httpd.worker',
         match  => '#?HTTPD=/usr/sbin/httpd.worker',
+        require => Package['httpd'],
         notify => Service['httpd'],
       }
     }
