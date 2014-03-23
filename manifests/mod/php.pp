@@ -12,6 +12,7 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
   ::apache::mod { 'php5':
     package_ensure => $package_ensure,
   }
+  }
 
   include ::apache::mod::mime
   include ::apache::mod::dir
