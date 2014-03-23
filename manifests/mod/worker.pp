@@ -58,9 +58,6 @@ class apache::mod::worker (
           notify  => Service['httpd'],
         }
       }
-      package { 'apache2-mpm-worker':
-        ensure => present,
-      }
     }
     'debian', 'freebsd': {
       ::apache::mpm{ 'worker':
