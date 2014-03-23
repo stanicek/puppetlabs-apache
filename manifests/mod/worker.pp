@@ -21,7 +21,7 @@ class apache::mod::worker (
   }
   File {
     owner => 'root',
-    group => $apache::params::root_group,
+    group => $::apache::params::root_group,
     mode  => '0644',
   }
 
@@ -33,40 +33,38 @@ class apache::mod::worker (
   # - $threadsperchild
   # - $maxrequestsperchild
   # - $serverlimit
-  file { "${apache::mod_dir}/worker.conf":
+  file { "${::apache::mod_dir}/worker.conf":
     ensure  => file,
     content => template('apache/mod/worker.conf.erb'),
-    require => Exec["mkdir ${apache::mod_dir}"],
-    before  => File[$apache::mod_dir],
+    require => Exec["mkdir ${::apache::mod_dir}"],
+    before  => File[$::apache::mod_dir],
     notify  => Service['httpd'],
   }
 
   case $::osfamily {
     'redhat': {
-      file_line { '/etc/sysconfig/httpd worker enable':
-        ensure => present,
-        path   => '/etc/sysconfig/httpd',
-        line   => 'HTTPD=/usr/sbin/httpd.worker',
-        match  => '#?HTTPD=/usr/sbin/httpd.worker',
-        require => Package['httpd'],
-        notify => Service['httpd'],
+      if $apache_version >= 2.4 {
+        ::apache::mpm{ 'worker':
+          apache_version => $apache_version,
+        }
       }
-    }
-    'debian': {
-      file { "${apache::mod_enable_dir}/worker.conf":
-        ensure  => link,
-        target  => "${apache::mod_dir}/worker.conf",
-        require => Exec["mkdir ${apache::mod_enable_dir}"],
-        before  => File[$apache::mod_enable_dir],
-        notify  => Service['httpd'],
+      else {
+        file_line { '/etc/sysconfig/httpd worker enable':
+          ensure  => present,
+          path    => '/etc/sysconfig/httpd',
+          line    => 'HTTPD=/usr/sbin/httpd.worker',
+          match   => '#?HTTPD=/usr/sbin/httpd.worker',
+          require => Package['httpd'],
+          notify  => Service['httpd'],
+        }
       }
       package { 'apache2-mpm-worker':
         ensure => present,
       }
     }
-    'freebsd' : {
-      class { 'apache::package':
-        mpm_module => 'worker'
+    'debian', 'freebsd': {
+      ::apache::mpm{ 'worker':
+        apache_version => $apache_version,
       }
     }
     default: {

@@ -5,18 +5,17 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
     fail('apache::mod::php requires apache::mod::prefork; please enable mpm_module => \'prefork\' on Class[\'apache\']')
   }
   if (defined(Class['apache::mod::worker'])) {
-    apache::mod { 'php5':
+  ::apache::mod { 'php5':
       package_ensure => 'absent',
     }
   } else {
-    apache::mod { 'php5':
-      package_ensure => $package_ensure,
-    }
+  ::apache::mod { 'php5':
+    package_ensure => $package_ensure,
   }
 
-  include apache::mod::mime
-  include apache::mod::dir
-  Class['apache::mod::mime'] -> Class['apache::mod::dir'] -> Class['apache::mod::php']
+  include ::apache::mod::mime
+  include ::apache::mod::dir
+  Class['::apache::mod::mime'] -> Class['::apache::mod::dir'] -> Class['::apache::mod::php']
 
   $php5_conf_ensure = $package_ensure ? {
     /(present|installed|held|latest)/ => 'file',
@@ -42,11 +41,14 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
   }
 
   file { 'php5.conf':
-    ensure  => $php5_conf_ensure,
-    path    => "${apache::mod_dir}/php5.conf",
-    content => template($php_conf_path),
-    require => $required_dependencies,
-    before  => File[$apache::mod_dir],
+    ensure  => file,
+    path    => "${::apache::mod_dir}/php5.conf",
+    content => template('apache/mod/php5.conf.erb'),
+    require => [
+      Class['::apache::mod::prefork'],
+      Exec["mkdir ${::apache::mod_dir}"],
+    ],
+    before  => File[$::apache::mod_dir],
     notify  => Service['httpd'],
   }
 }
