@@ -67,7 +67,7 @@ define apache::mod (
     }
   }
 
-  if $package_ensure == 'present {
+  if $package_ensure == 'present' {
       $file_ensure = 'file'
   } else {
       $file_ensure = 'absent'
