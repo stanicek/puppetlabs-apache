@@ -46,7 +46,7 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
     path    => "${::apache::mod_dir}/php5.conf",
     content => template('apache/mod/php5.conf.erb'),
     require => [
-      Exec["mkdir ${::apache::mod_dir}"],
+      $required_dependencies,
     ],
     before  => File[$::apache::mod_dir],
     notify  => Service['httpd'],
