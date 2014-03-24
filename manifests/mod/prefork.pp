@@ -19,6 +19,9 @@ class apache::mod::prefork (
   if defined(Class['apache::mod::worker']) {
     fail('May not include both apache::mod::prefork and apache::mod::worker on the same node')
   }
+
+  apache::mod { 'prefork': }
+
   File {
     owner => 'root',
     group => $::apache::params::root_group,

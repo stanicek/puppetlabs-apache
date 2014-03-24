@@ -67,8 +67,13 @@ define apache::mod (
     }
   }
 
+  if $package_ensure == 'present {
+      $file_ensure = 'file'
+  } else {
+      $file_ensure = 'absent'
+  }
   file { "${mod}.load":
-    ensure  => file,
+    ensure  => $file_ensure,
     path    => "${mod_dir}/${mod}.load",
     owner   => 'root',
     group   => $::apache::params::root_group,
