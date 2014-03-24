@@ -311,13 +311,13 @@ define apache::vhost(
 
   # Set access log format
   if $access_log_format {
-    $access_log_format = "\"${access_log_format}\""
+    $my_access_log_format = "\"${access_log_format}\""
   } else {
-    $access_log_format = 'combined'
+    $my_access_log_format = 'combined'
   }
 
   if $access_log_env_var {
-    $access_log_env_var = "env=${access_log_env_var}"
+    $my_access_log_env_var = "env=${access_log_env_var}"
   }
 
   if $ip {
