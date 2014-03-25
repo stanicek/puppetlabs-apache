@@ -1,10 +1,10 @@
-class apache::mod::fastcgi-fpm {
+class apache::mod::fastcgi_fpm {
 
   # Debian specifies it's fastcgi lib path, but RedHat uses the default value
   # with no config file
   $fastcgi_lib_path = $::apache::params::fastcgi_lib_path
 
-  ::apache::mod { 'fastcgi-fpm': }
+  ::apache::mod { 'fastcgi_fpm': }
 
   if $fastcgi_lib_path {
     # Template uses:

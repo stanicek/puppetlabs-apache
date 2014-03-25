@@ -97,9 +97,6 @@ class apache::default_mods (
       'worker': {
         include ::apache::mod::cgid
       }
-      'fpm': {
-        include apache::mod::php5-fpm
-      }
       default: {
         # do nothing
       }
