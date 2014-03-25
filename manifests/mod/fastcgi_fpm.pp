@@ -4,7 +4,7 @@ class apache::mod::fastcgi_fpm {
   # with no config file
   $fastcgi_lib_path = $::apache::params::fastcgi_lib_path
 
-  ::apache::mod { 'fastcgi_fpm': }
+  ::apache::mod { 'fastcgi': }
 
   if $fastcgi_lib_path {
     # Template uses:
