@@ -4,3 +4,7 @@
   AddHandler fastcgi-script .fcgi
   FastCgiIpcDir "<%= @fastcgi_lib_path %>"
 </IfModule>
+<IfModule mod_worker.c>
+  AddType application/x-httpd-fastphp5 .php
+  Action application/x-httpd-fastphp5 /php5.fcgi
+</IfModule>
