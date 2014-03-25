@@ -14,8 +14,15 @@
 #
 # Cause the PHP interpreter to handle files with a .php extension.
 #
+<IfModule prefork.c>
 AddHandler php5-script .php
 AddType text/html .php
+</IfModule>
+
+<IfModule mpm_worker_module>
+  AddType application/x-httpd-fastphp5 .php
+  Action application/x-httpd-fastphp5 /php5-fcgi
+</IfModule>
 
 #
 # Add index.php to the list of files that will be served as directory

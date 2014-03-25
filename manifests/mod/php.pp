@@ -38,7 +38,7 @@ if ((!defined(Class['apache::mod::prefork'])) and (!defined(Class['apache::mod::
       Exec["mkdir ${apache::mod_dir}"],
     ]
     contain apache::mod::fastcgi_fpm
-  	$php_conf_path = "apache/mod/php5-fpm.conf.erb"
+  	$php_conf_path = "apache/mod/php5.conf.erb"
   }
 
   file { 'php5.conf':
